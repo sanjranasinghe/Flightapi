@@ -18,7 +18,7 @@
 
    - name: create launch config
      community.aws.ec2_launch_template:
-       name: test
+       name: "{{ name }}"
        image_id: "{{ ami.image_id }}"
        region: ap-southeast-1
        instance_type: c5.xlarge
