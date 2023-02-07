@@ -1,0 +1,27 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+
+   - name: Basic AMI Creation
+     amazon.aws.ec2_ami:
+       instance_id: "i-07d96d9fae4f86598"
+       wait: yes
+       wait_timeout: 1800
+       name: MOS-Flight-v14
+       region: ap-southeast-1
+       tags:
+         Name: MOS-Microservices-flight-v14
+         Service: MOS-Microservices
+     register: ami
+
+
+   - name: create launch config
+     community.aws.ec2_launch_template:
+       name: test
+       image_id: "{{ ami.image_id }}"
+       region: ap-southeast-1
+       instance_type: c5.xlarge
+
+   - name: save result
+     local_action:  copy content={{ ami }} dest=/var/lib/jenkins/workspace/Deployment/ami_replace
