@@ -1,0 +1,26 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+
+   - name: launching aws
+     amazon.aws.ec2_instance:
+       name: "public-compute-instance"
+       image_id: "ami-07ac0a74d21a3174c"
+       security_group: MOS-Flight-SG-DC-VPN-CMB-Office-20230119100213514800000001
+       key_name: "sanjaya"
+       region: ap-southeast-1
+       vpc_subnet_id: subnet-024c6a259a7627076
+       count: 1
+       instance_type: t2.micro
+       wait: yes
+       user_data: "{{ lookup('file', '{{ script }}') }}"
+     register: ec2
+
+
+
+   - name: save result
+     local_action:  copy content={{ ec2 }} dest=/var/lib/jenkins/workspace/Deployment/instance_details
+
+   - name: instance_replace
+     shell: sh /var/lib/jenkins/workspace/Deployment/instance_replace.sh
