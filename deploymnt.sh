@@ -11,4 +11,4 @@ echo $next_n
 #cd /root/ansible_flight
 ansible-playbook ec2.yml --extra-vars "script=$1"
 sleep 1m
-ansible-playbook ec2_ami.yml --extra-vars "version=$next_n"
+ansible-playbook ec2_ami.yml --extra-vars "name=$1 version=$next_n"
