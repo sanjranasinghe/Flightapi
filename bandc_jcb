@@ -55,3 +55,27 @@ sed -i 's/"Url": "redis.moresanddc.uk"/"Url": "sandbox-redis.moresanddc.uk"/g' m
 sed -i 's/"AccessKeyId": "AKIA2NFBWRNX7SGXBLS7"/"AccessKeyId": "AKIA2NFBWRNX3YL2KT6P"/g' mos_cmb_bandc_jcb_worker/appsettings.json
 sed -i 's/"SecretAccessKey": "bx5zKL7nTpqts2ooWHUusO\/zRqesoez+4FYytDSS"/"SecretAccessKey": "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"/g' mos_cmb_bandc_jcb_worker/appsettings.json
 make ENV=PROD rebuild
+
+cat <<EOF | tee /etc/systemd/system/bndc_jcp.service
+[Unit]
+Description=bandc_jcb_worker-container
+After=docker.service
+Requires=docker.service
+
+[Service]
+ExecStartPre=/bin/bash -c "/usr/bin/docker rm -f bandc_jcb_worker-container || true"
+ExecStart=/usr/bin/docker run --rm -p 7008:80 --env ENV=UAT  --name bandc_jcb_worker-container bandc_jcb_worker
+Restart=always
+RestartSec=10s
+#Type=notify
+#NotifyAccess=all
+TimeoutStartSec=120
+TimeoutStopSec=15
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable bndc_jcp.service
+systemctl start bndc_jcp.service
