@@ -65,7 +65,7 @@ Requires=docker.service
 
 [Service]
 ExecStartPre=/bin/bash -c "/usr/bin/docker rm -f bandc_so_worker-container || true"
-ExecStart=/usr/bin/docker run --rm -p 7009:80 --env ENV=$
+ExecStart=/usr/bin/docker run --rm -p 7009:80 --env ENV=UAT --name bandc_so_worker-container bandc_so_worker
 Restart=always
 RestartSec=10s
 #Type=notify
@@ -75,6 +75,7 @@ TimeoutStopSec=15
 
 [Install]
 WantedBy=multi-user.target
+
 EOF
 
 systemctl daemon-reload
