@@ -31,9 +31,20 @@ l9q5FslYHe5RT8Jb42yJF0nnbKdxW+Fqd7PRZc5zSR56O9BPwe2OK6DLPGuPAX8iFOLbHN
 EOF
 
 chmod 400 /root/.ssh/id_rsa
+ssh-keyscan -H bitbucket.org >> ~/.ssh/known_hosts
 
-apt update
-apt install git make
+apt-get update
+apt-get install sudo net-tools git curl make -y
+apt-get remove docker docker-engine docker.io containerd runc
+apt-get update
+apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common -y
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+apt-key fingerprint 0EBFCD88
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+apt-get update
+apt-get install docker-ce docker-ce-cli containerd.io -y
+systemctl start docker
+systemctl enable docker
 
 cd /usr/local/src/
 git clone git@bitbucket.org:moresand/mos-cmb-amadeus-worker.git
@@ -52,7 +63,6 @@ cat <<EOF | tee /etc/systemd/system/amadeus_multicity-itx.service
 Description=mos_cmb_amadeus_multicity_worker_itx
 After=docker.service
 Requires=docker.service
-
 [Service]
 ExecStartPre=/bin/bash -c "/usr/bin/docker rm -f mos_cmb_amadeus_multicity_worker_itx-container || true"
 ExecStart=/usr/bin/docker run --rm -p 7006:80 --env ENV=UAT --name mos_cmb_amadeus_multicity_worker_itx-container mos_cmb_amadeus_multicity_worker_itx
@@ -62,7 +72,6 @@ RestartSec=10s
 #NotifyAccess=all
 TimeoutStartSec=120
 TimeoutStopSec=15
-
 [Install]
 WantedBy=multi-user.target
 EOF
@@ -70,4 +79,3 @@ EOF
 systemctl daemon-reload
 systemctl enable amadeus_multicity-itx.service
 systemctl start amadeus_multicity-itx.service
-
