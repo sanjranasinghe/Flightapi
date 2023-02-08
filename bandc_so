@@ -56,3 +56,29 @@ sed -i 's/"Url": "redis.moresanddc.uk"/"Url": "sandbox-redis.moresanddc.uk"/g' m
 sed -i 's/"AccessKeyId": "AKIA2NFBWRNX7SGXBLS7"/"AccessKeyId": "AKIA2NFBWRNX3YL2KT6P"/g' mos_cmb_bandc_so_worker/appsettings.json
 sed -i 's/"SecretAccessKey": "bx5zKL7nTpqts2ooWHUusO\/zRqesoez+4FYytDSS"/"SecretAccessKey": "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"/g' mos_cmb_bandc_so_worker/appsettings.json
 make ENV=PROD build-container
+
+cat <<EOF | tee /etc/systemd/system/bandc_so.service
+[Unit]
+Description=bandc_so_worker-container
+After=docker.service
+Requires=docker.service
+
+[Service]
+ExecStartPre=/bin/bash -c "/usr/bin/docker rm -f bandc_so_worker-container || true"
+ExecStart=/usr/bin/docker run --rm -p 7009:80 --env ENV=$
+Restart=always
+RestartSec=10s
+#Type=notify
+#NotifyAccess=all
+TimeoutStartSec=120
+TimeoutStopSec=15
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable bandc_so.service
+systemctl start bandc_so.service
+
+
