@@ -55,4 +55,4 @@ mv mos_cmb_bandc_so_worker/Dockerfile .
 sed -i 's/"Url": "redis.moresanddc.uk"/"Url": "sandbox-redis.moresanddc.uk"/g' mos_cmb_bandc_so_worker/appsettings.json
 sed -i 's/"AccessKeyId": "AKIA2NFBWRNX7SGXBLS7"/"AccessKeyId": "AKIA2NFBWRNX3YL2KT6P"/g' mos_cmb_bandc_so_worker/appsettings.json
 sed -i 's/"SecretAccessKey": "bx5zKL7nTpqts2ooWHUusO\/zRqesoez+4FYytDSS"/"SecretAccessKey": "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"/g' mos_cmb_bandc_so_worker/appsettings.json
-make ENV=PROD rebuild
+make ENV=PROD build-container
