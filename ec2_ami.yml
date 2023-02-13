@@ -25,3 +25,25 @@
 
    - name: save result
      local_action:  copy content={{ ami }} dest=/var/lib/jenkins/workspace/Deployment/ami_replace
+
+ 
+   - amazon.aws.autoscaling_group:
+       name: special
+       launch_template:
+           launch_template_id: "{{ lunch.template.launch_template_id }}"
+           launch_template_name: "{{ name }}"
+           version: '$Latest'
+       health_check_period: 60
+       health_check_type: EC2
+#        target_group_arns: "{{ flight.target_group_arn }}"
+#        replace_all_instances: yes
+       availability_zones: [ 'ap-southeast-1a', 'ap-southeast-1b' ]
+       min_size: 2
+       max_size: 10
+       vpc_zone_identifier: [ subnet-024c6a259a7627076,subnet-093bf60730f5a5b96 ]
+       desired_capacity: 2
+       tags:
+         - Name: MOS-Microservices-test
+           propagate_at_launch: no
+       region: ap-southeast-1
+     register: asg_result
